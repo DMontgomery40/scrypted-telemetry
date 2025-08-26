@@ -35,10 +35,10 @@ Install these first, then configure the plugin:
 ## Screenshots
 
 Grafana dashboard with multi-node monitoring:
-![Grafana Dashboard](assets/Screenshot%202025-08-26%20at%2012.06.52%20AM.png)
+![Grafana Dashboard](assets/grafana-dashboard.png)
 
 Scrypted plugin configuration:
-![Plugin Settings](assets/Screenshot%202025-08-26%20at%2012.13.17%20AM.png)
+![Plugin Settings](assets/plugin-settings.png)
 
 ## Docker deployments
 

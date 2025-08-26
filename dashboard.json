@@ -64,7 +64,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "none"
         },
         "overrides": []
       },
@@ -109,7 +109,7 @@
           "editorMode": "code",
           "expr": "mac_ane_usage_percent",
           "instant": false,
-          "legendFormat": "Mac/.229 Neural Engine",
+          "legendFormat": "Mac/.229 Neural Engine %",
           "range": true,
           "refId": "A"
         },
@@ -488,7 +488,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 298
+                "value": 168
               },
               {
                 "id": "custom.cellOptions",
@@ -514,7 +514,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 157
+                "value": 141
               }
             ]
           },
@@ -550,7 +550,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 1437
+                "value": 1185
               }
             ]
           }
@@ -840,7 +840,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "red",
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               }
@@ -1593,5 +1593,5 @@
   "timezone": "",
   "title": "🚀 SCRYPTED 🎥 NVR Dashboard",
   "uid": "scrypted-telemetry",
-  "version": 35
+  "version": 37
 }
