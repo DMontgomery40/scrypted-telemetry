@@ -35,6 +35,14 @@ Install these first, then configure the plugin:
 3. Configure exporter endpoints in plugin settings
 4. Access metrics at `/endpoint/telemetry/metrics` or standalone server port
 
+## Screenshots
+
+Grafana dashboard with multi-node monitoring:
+![Grafana Dashboard](assets/Screenshot%202025-08-26%20at%2012.06.52%20AM.png)
+
+Scrypted plugin configuration:
+![Plugin Settings](assets/Screenshot%202025-08-26%20at%2012.13.17%20AM.png)
+
 ## Docker deployments
 
 Pre-configured docker-compose files in `/deployments/` for different hardware combinations.
