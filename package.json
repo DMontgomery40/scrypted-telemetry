@@ -1,0 +1,43 @@
+{
+  "name": "@scrypted/telemetry",
+  "version": "0.1.0",
+  "description": "Comprehensive hardware telemetry monitoring with cluster state sharing for Scrypted",
+  "main": "dist/main.js",
+  "scripts": {
+    "scrypted-webpack": "scrypted-webpack",
+    "scrypted-deploy": "npm run scrypted-webpack && npx scrypted-deploy 192.168.68.157",
+    "scrypted-debug": "npm run scrypted-webpack && npx scrypted-debug 192.168.68.157",
+    "scrypted-deploy-debug": "npm run scrypted-webpack && npx scrypted-deploy-debug 192.168.68.157"
+  },
+  "keywords": [
+    "scrypted",
+    "telemetry",
+    "monitoring",
+    "prometheus",
+    "hardware",
+    "metrics",
+    "gpu",
+    "npu",
+    "apple-neural-engine"
+  ],
+  "author": "David Montgomery",
+  "license": "MIT",
+  "scrypted": {
+    "name": "Telemetry Monitor",
+    "type": "API",
+    "interfaces": [
+      "Settings",
+      "HttpRequestHandler",
+      "DeviceProvider"
+    ]
+  },
+  "devDependencies": {
+    "@scrypted/sdk": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "systeminformation": "^5.21.0",
+    "node-fetch": "^3.3.2"
+  }
+}

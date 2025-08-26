@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # Intel GPU monitoring
+  intel-gpu-top:
+    image: bija52/intel-gpu-top:latest
+    container_name: intel-gpu-top
+    privileged: true
+    volumes:
+      - /dev/dri:/dev/dri
+    ports:
+      - "9101:9101"
+    restart: unless-stopped
+    environment:
+      - INTERVAL=1
+      - PORT=9101
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9101/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  intel-gpu-exporter:
+    image: dmontgomery40/intel-gpu-prometheus-exporter:latest
+    container_name: intel-gpu-exporter
+    depends_on:
+      intel-gpu-top:
+        condition: service_healthy
+    ports:
+      - "9102:9102"
+    restart: unless-stopped
+    environment:
+      - INTEL_GPU_TOP_URL=http://intel-gpu-top:9101
+      - EXPORTER_PORT=9102
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9102/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Intel NPU monitoring
+  intel-npu-top:
+    image: dmontgomery40/intel-npu-top:latest
+    container_name: intel-npu-top
+    privileged: true
+    volumes:
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+    ports:
+      - "9103:9103"
+    restart: unless-stopped
+    environment:
+      - INTERVAL=1
+      - PORT=9103
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9103/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  intel-npu-exporter:
+    image: dmontgomery40/intel-npu-prometheus-exporter:latest
+    container_name: intel-npu-exporter
+    depends_on:
+      intel-npu-top:
+        condition: service_healthy
+    ports:
+      - "9104:9104"
+    restart: unless-stopped
+    environment:
+      - INTEL_NPU_TOP_URL=http://intel-npu-top:9103
+      - EXPORTER_PORT=9104
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9104/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # NVIDIA GPU monitoring
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: nvidia-dcgm-exporter
+    runtime: nvidia
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
+      - DCGM_EXPORTER_KUBERNETES=false
+    ports:
+      - "9400:9400"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9400/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-mixed

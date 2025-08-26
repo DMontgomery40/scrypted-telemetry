@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'scrypted-telemetry-standalone'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.157:9090']
+    metrics_path: /metrics
+    scrape_interval: 30s
+    
+  # Backup: Original endpoint (if standalone fails)
+  - job_name: 'scrypted-telemetry-original'  
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['192.168.68.157:10443']
+    metrics_path: /endpoint/@scrypted/telemetry/public//metrics
+    scrape_interval: 30s

@@ -1,0 +1,95 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Scrypted Telemetry Plugin - Standalone HTTP Server
+  - job_name: 'scrypted-telemetry'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.157:9090']  # PVE3 Scrypted container
+    metrics_path: /metrics
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    
+  # PVE (.173) - Main Plex/Arr host with Intel 125h
+  - job_name: 'pve-host'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.173:9100']  # node_exporter
+    metrics_path: /metrics
+    scrape_interval: 15s
+    
+  - job_name: 'pve-telegraf'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.173:9273']  # telegraf
+    metrics_path: /metrics
+    scrape_interval: 15s
+    
+  - job_name: 'pve-intel-gpu'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.173:8081']  # intel-gpu-exporter
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # PVE3 (.136) - Scrypted NVR host with Intel 13500h
+  - job_name: 'pve3-host'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.136:9100']  # node_exporter
+    metrics_path: /metrics
+    scrape_interval: 15s
+    
+  - job_name: 'pve3-telegraf'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.136:9273']  # telegraf
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Mac Mini M4 (.229) - Primary workstation with Apple Silicon metrics  
+  - job_name: 'mac-mini-macmon'
+    scheme: http  
+    static_configs:
+      - targets: ['192.168.68.229:9101']  # macmon exporter (Apple Silicon metrics)
+    metrics_path: /metrics
+    scrape_interval: 15s
+    
+  # Service Health Monitoring
+  - job_name: 'scrypted-health'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.157:9090']
+    metrics_path: /health
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    
+  # Grafana Dashboard
+  - job_name: 'grafana'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.89:3000']  # Grafana LXC
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Additional External Exporters (if available)
+  - job_name: 'intel-npu-exporter'
+    scheme: http
+    static_configs:
+      - targets: ['192.168.68.173:8000']  # Intel NPU exporter
+    metrics_path: /metrics
+    scrape_interval: 30s
+    
+
+# Rule evaluation (for alerting)
+rule_files:
+  - "alert_rules.yml"
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#   - static_configs:
+#     - targets:
+#       - alertmanager:9093

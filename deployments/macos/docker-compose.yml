@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  macmon-exporter:
+    image: dmontgomery40/macmon-prometheus-exporter:latest
+    container_name: macmon-exporter
+    # Note: On macOS, Docker containers can't access hardware directly
+    # This exporter runs macmon as a subprocess inside the container
+    volumes:
+      - /tmp:/tmp:ro  # For macmon socket if needed
+    ports:
+      - "9105:9105"
+    restart: unless-stopped
+    environment:
+      - MACMON_INTERVAL=1
+      - EXPORTER_PORT=9105
+      - MACMON_ARGS=pipe -s 1 --soc-info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9105/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-macos

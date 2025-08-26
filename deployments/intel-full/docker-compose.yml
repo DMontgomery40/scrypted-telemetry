@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  intel-gpu-top:
+    image: bija52/intel-gpu-top:latest
+    container_name: intel-gpu-top
+    privileged: true
+    volumes:
+      - /dev/dri:/dev/dri
+    ports:
+      - "9101:9101"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9101/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      - INTERVAL=1
+      - PORT=9101
+
+  intel-gpu-exporter:
+    image: dmontgomery40/intel-gpu-prometheus-exporter:latest
+    container_name: intel-gpu-exporter
+    depends_on:
+      intel-gpu-top:
+        condition: service_healthy
+    ports:
+      - "9102:9102"
+    restart: unless-stopped
+    environment:
+      - INTEL_GPU_TOP_URL=http://intel-gpu-top:9101
+      - EXPORTER_PORT=9102
+      - SCRAPE_INTERVAL=5s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9102/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  intel-npu-top:
+    image: dmontgomery40/intel-npu-top:latest
+    container_name: intel-npu-top
+    privileged: true
+    volumes:
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+    ports:
+      - "9103:9103"
+    restart: unless-stopped
+    environment:
+      - INTERVAL=1
+      - PORT=9103
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9103/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  intel-npu-exporter:
+    image: dmontgomery40/intel-npu-prometheus-exporter:latest
+    container_name: intel-npu-exporter
+    depends_on:
+      intel-npu-top:
+        condition: service_healthy
+    ports:
+      - "9104:9104"
+    restart: unless-stopped
+    environment:
+      - INTEL_NPU_TOP_URL=http://intel-npu-top:9103
+      - EXPORTER_PORT=9104
+      - SCRAPE_INTERVAL=5s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9104/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-intel-full

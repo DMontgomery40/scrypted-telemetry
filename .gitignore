@@ -1,0 +1,8 @@
+CLAUDE.md
+claude_draft.md
+node_modules/
+dist/
+out/
+*.log
+*.pid
+.DS_Store
