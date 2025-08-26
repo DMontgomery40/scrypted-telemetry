@@ -1,5 +1,5 @@
 {
-  "name": "@scrypted/telemetry",
+  "name": "@dmontgomery40/scrypted-telemetry",
   "version": "0.1.0",
   "description": "Comprehensive hardware telemetry monitoring with cluster state sharing for Scrypted",
   "main": "dist/main.js",
