@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # NVIDIA GPU monitoring using official DCGM exporter
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: nvidia-dcgm-exporter
+    runtime: nvidia
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
+      - DCGM_EXPORTER_KUBERNETES=false
+      - DCGM_EXPORTER_COLLECTORS=/etc/dcgm-exporter/dcp-metrics-included.csv
+    ports:
+      - "9400:9400"
+    restart: unless-stopped
+    volumes:
+      - /usr/local/dcgm:/usr/local/dcgm:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9400/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Add node-exporter for comprehensive system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-nvidia

@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Intel GPU monitoring using available public image
+  intel-gpu-exporter:
+    image: andrewgolikov55/intel-gpu-exporter:latest
+    container_name: intel-gpu-exporter
+    privileged: true
+    volumes:
+      - /dev/dri:/dev/dri
+    ports:
+      - "9102:9102"
+    restart: unless-stopped
+    environment:
+      - EXPORTER_PORT=9102
+      - SCRAPE_INTERVAL=5s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9102/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Intel NPU monitoring (local build)
+  intel-npu-top:
+    image: local/intel-npu-top:latest
+    container_name: intel-npu-top
+    privileged: true
+    volumes:
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+    ports:
+      - "9103:9103"
+    restart: unless-stopped
+    environment:
+      - INTERVAL=1
+      - PORT=9103
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9103/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Intel NPU Prometheus exporter (local build)
+  intel-npu-exporter:
+    image: local/intel-npu-prometheus-exporter:latest
+    container_name: intel-npu-exporter
+    depends_on:
+      intel-npu-top:
+        condition: service_healthy
+    ports:
+      - "9104:9104"
+    restart: unless-stopped
+    environment:
+      - INTEL_NPU_TOP_URL=http://intel-npu-top:9103
+      - EXPORTER_PORT=9104
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9104/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # NVIDIA GPU monitoring using official DCGM exporter
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: nvidia-dcgm-exporter
+    runtime: nvidia
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - DCGM_EXPORTER_LISTEN=0.0.0.0:9400
+      - DCGM_EXPORTER_KUBERNETES=false
+    ports:
+      - "9400:9400"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9400/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Add node-exporter for comprehensive system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-mixed

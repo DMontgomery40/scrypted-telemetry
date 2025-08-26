@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Intel NPU monitoring (local build)
+  intel-npu-top:
+    image: local/intel-npu-top:latest
+    container_name: intel-npu-top
+    privileged: true
+    volumes:
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+    ports:
+      - "9103:9103"
+    restart: unless-stopped
+    environment:
+      - INTERVAL=1
+      - PORT=9103
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9103/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Intel NPU Prometheus exporter (local build)
+  intel-npu-exporter:
+    image: local/intel-npu-prometheus-exporter:latest
+    container_name: intel-npu-exporter
+    depends_on:
+      intel-npu-top:
+        condition: service_healthy
+    ports:
+      - "9104:9104"
+    restart: unless-stopped
+    environment:
+      - INTEL_NPU_TOP_URL=http://intel-npu-top:9103
+      - EXPORTER_PORT=9104
+      - SCRAPE_INTERVAL=5s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9104/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Add node-exporter for comprehensive system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-intel-npu

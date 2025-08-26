@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # macOS monitoring (local build - placeholder implementation)
+  macmon-exporter:
+    image: local/macmon-prometheus-exporter:latest
+    container_name: macmon-exporter
+    # Note: On macOS, Docker containers have limited hardware access
+    # This is a placeholder - real macOS monitoring may require native tools
+    volumes:
+      - /tmp:/tmp:ro  # For potential socket communication
+    ports:
+      - "9105:9105"
+    restart: unless-stopped
+    environment:
+      - MACMON_INTERVAL=1
+      - EXPORTER_PORT=9105
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9105/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Add node-exporter for comprehensive system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-macos

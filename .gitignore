@@ -6,3 +6,8 @@ out/
 *.log
 *.pid
 .DS_Store
+
+# Docker build artifacts and logs
+deployments/**/logs/
+deployments/**/*.log
+deployments/**/*.pid

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Intel GPU monitoring using available public image
+  intel-gpu-exporter:
+    image: andrewgolikov55/intel-gpu-exporter:latest
+    container_name: intel-gpu-exporter
+    privileged: true
+    volumes:
+      - /dev/dri:/dev/dri
+    ports:
+      - "9102:9102"
+    restart: unless-stopped
+    environment:
+      - EXPORTER_PORT=9102
+      - SCRAPE_INTERVAL=5s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9102/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Add node-exporter for comprehensive system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  default:
+    driver: bridge
+    name: telemetry-intel-gpu
