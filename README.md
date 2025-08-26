@@ -16,6 +16,7 @@ Install these first, then configure the plugin:
 **Intel systems:**
 - `intel-gpu-tools` package
 - `intel-gpu-top` tool
+- Intel GPU exporter (from bjia56/btop-builder or similar)
 - `dmontgomery40/intel-gpu-prometheus-exporter` container
 - `dmontgomery40/intel-npu-top` container  
 - `dmontgomery40/intel-npu-prometheus-exporter` container
