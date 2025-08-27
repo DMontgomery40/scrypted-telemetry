@@ -18,7 +18,7 @@
   "description": "🛡️ Critical Infrastructure Monitoring for Scrypted NVR - Life Safety System",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 1,
+  "graphTooltip": 2,
   "id": 37,
   "links": [],
   "liveNow": true,
@@ -311,7 +311,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "thresholds"
           },
           "mappings": [],
           "thresholds": {
@@ -322,58 +322,67 @@
                 "value": 0
               },
               {
-                "color": "red",
+                "color": "#FFFF99",
+                "value": 40
+              },
+              {
+                "color": "#FFD700",
+                "value": 50
+              },
+              {
+                "color": "#FF8C00",
+                "value": 60
+              },
+              {
+                "color": "#FF6347",
+                "value": 70
+              },
+              {
+                "color": "#DC143C",
                 "value": 80
+              },
+              {
+                "color": "#8B0000",
+                "value": 90
               }
             ]
-          }
+          },
+          "unit": "celsius"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/dev/sdb1"
+              "options": "/.*192\\.168\\.68\\.173.*/"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "🎥 NVR Storage 1"
+                "value": "PVE CPU Temperature"
               }
             ]
           },
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/dev/sdc1"
+              "options": "/.*192\\.168\\.68\\.136.*/"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "🎥 NVR Storage 2"
+                "value": "PVE3 CPU Temperature"
               }
             ]
           },
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/dev/mapper/pve-root"
+              "options": "/.*192\\.168\\.68\\.229.*/"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "💾 PVE Root"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/$"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "💾 Root Filesystem"
+                "value": "Mac Mini CPU Temperature"
               }
             ]
           }
@@ -384,306 +393,6 @@
         "w": 6,
         "x": 18,
         "y": 1
-      },
-      "id": 7,
-      "options": {
-        "displayMode": "lcd",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fetlt404vh7nka"
-          },
-          "editorMode": "code",
-          "expr": "disk_utilization_percent{device=~\"/dev/sdb1|/dev/sdc1\"} or (100 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\",mountpoint=~\"/|/root|/data\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",mountpoint=~\"/|/root|/data\"} * 100))",
-          "instant": false,
-          "legendFormat": "{{device}}{{mountpoint}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "🗄️ Storage Usage",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fetlt404vh7nka"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto",
-              "wrapText": true
-            },
-            "filterable": false,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 15
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Host"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 80
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CPU %"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 168
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "gradient",
-                  "type": "color-background"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Memory %"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "gradient",
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 141
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "host 1"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 79
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "instance"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 235
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Full Command"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 1185
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 6
-      },
-      "id": 25,
-      "options": {
-        "cellHeight": "md",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 0,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "CPU %"
-          }
-        ]
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fetlt404vh7nka"
-          },
-          "editorMode": "code",
-          "expr": "topk(10, top_process_cpu_percent)",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fetlt404vh7nka"
-          },
-          "editorMode": "code",
-          "expr": "group by (full_command, host, pid, process_id) (top_process_memory_percent)",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "B"
-        }
-      ],
-      "title": "🔥 Top CPU Processes (Full Commands)",
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "full_command",
-            "mode": "inner"
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "__name__": true,
-              "job": true,
-              "pid": true,
-              "process_id": true
-            },
-            "indexByName": {
-              "Value #A": 2,
-              "Value #B": 3,
-              "full_command": 1,
-              "host": 0
-            },
-            "renameByName": {
-              "Value #A": "CPU %",
-              "Value #B": "Memory %",
-              "full_command": "Full Command",
-              "host": "Host"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "fetlt404vh7nka"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 70
-              },
-              {
-                "color": "red",
-                "value": 85
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 11,
-        "x": 0,
-        "y": 15
       },
       "id": 2,
       "options": {
@@ -718,40 +427,39 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
-          "expr": "avg by (node) (cpu_temperature_celsius{core!=\"\"}) or avg by (instance) (node_hwmon_temp_celsius{chip=~\".*cpu.*|.*coretemp.*\"}) or mac_cpu_power_watts{} * 10",
+          "expr": "node_hwmon_temp_celsius{chip=\"platform_coretemp_0\",sensor=\"temp1\",instance=\"192.168.68.173:9100\"}",
           "instant": false,
-          "legendFormat": "{{node}}{{instance}} CPU Temp",
+          "legendFormat": "PVE/.173 ",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "node_hwmon_temp_celsius{chip=\"platform_coretemp_0\",sensor=\"temp1\",instance=\"192.168.68.136:9100\"}",
+          "instant": false,
+          "legendFormat": "PVE3/.136 ",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "mac_cpu_temperature_celsius",
+          "instant": false,
+          "legendFormat": "Mac/.229 ",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "🌡️ CPU Temperatures",
       "type": "bargauge"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 3,
-        "x": 11,
-        "y": 15
-      },
-      "id": 27,
-      "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
-        },
-        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #7B2CBF, #9D4EDD); border-radius: 8px; height: 100%; display: flex; justify-content: center; align-items: center;\">\n  <img src=\"https://docs.scrypted.app/img/logo.png\" alt=\"Scrypted Logo\" style=\"max-width: 90%; max-height: 90%; width: auto; height: auto;\" />\n</div>",
-        "mode": "html"
-      },
-      "pluginVersion": "12.1.0",
-      "title": "",
-      "type": "text"
     },
     {
       "datasource": {
@@ -772,8 +480,8 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
+            "fillOpacity": 21,
+            "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -781,9 +489,9 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "pointSize": 5,
+            "pointSize": 1,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -798,8 +506,6 @@
             }
           },
           "mappings": [],
-          "max": 100,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -819,13 +525,28 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.*Intel GPU.*/"
+              "options": "/PVE\\/\\.173.*Intel GPU.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "purple",
+                  "fixedColor": "#FF6600",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/PVE3\\/\\.136.*Intel GPU.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8A2BE2",
                   "mode": "fixed"
                 }
               }
@@ -840,7 +561,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "#FF9933",
                   "mode": "fixed"
                 }
               }
@@ -849,13 +570,13 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.*Mac GPU.*/"
+              "options": "/.*Mac.*GPU.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "green",
+                  "fixedColor": "#DC143C",
                   "mode": "fixed"
                 }
               }
@@ -864,13 +585,13 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.*Mac ANE.*/"
+              "options": "/.*Neural Engine.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "cyan",
+                  "fixedColor": "#FF69B4",
                   "mode": "fixed"
                 }
               }
@@ -879,10 +600,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 10,
-        "x": 14,
-        "y": 15
+        "h": 12,
+        "w": 13,
+        "x": 0,
+        "y": 6
       },
       "id": 26,
       "options": {
@@ -894,8 +615,8 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "pluginVersion": "12.1.0",
@@ -906,7 +627,7 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
-          "expr": "gpu_utilization_percent",
+          "expr": "max by (instance) (intel_gpu_igpu_engines_video_0_busy_gauge{instance=\"192.168.68.173:9273\"} or intel_gpu_igpu_engines_render_3d_0_busy_gauge{instance=\"192.168.68.173:9273\"} or intel_gpu_igpu_engines_blitter_0_busy_gauge{instance=\"192.168.68.173:9273\"} or intel_gpu_igpu_engines_video_enhance_0_busy_gauge{instance=\"192.168.68.173:9273\"})",
           "instant": false,
           "legendFormat": "PVE/.173 Intel GPU",
           "range": true,
@@ -918,11 +639,23 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
+          "expr": "max by (instance) (igpu_engines_video_0_busy{instance=\"192.168.68.136:8080\"} or igpu_engines_render_3d_0_busy{instance=\"192.168.68.136:8080\"} or igpu_engines_blitter_0_busy{instance=\"192.168.68.136:8080\"} or igpu_engines_video_enhance_0_busy{instance=\"192.168.68.136:8080\"})",
+          "instant": false,
+          "legendFormat": "PVE3/.136 Intel GPU",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
           "expr": "intel_npu_usage_percent",
           "instant": false,
           "legendFormat": "PVE/.173 Intel NPU",
           "range": true,
-          "refId": "B"
+          "refId": "C"
         },
         {
           "datasource": {
@@ -934,7 +667,7 @@
           "instant": false,
           "legendFormat": "Mac/.229 GPU (M4)",
           "range": true,
-          "refId": "C"
+          "refId": "D"
         },
         {
           "datasource": {
@@ -946,7 +679,7 @@
           "instant": false,
           "legendFormat": "Mac/.229 Neural Engine",
           "range": true,
-          "refId": "D"
+          "refId": "E"
         }
       ],
       "title": "🚀 GPU & Accelerator Utilization",
@@ -971,8 +704,8 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
+            "fillOpacity": 39,
+            "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -980,9 +713,9 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "pointSize": 5,
+            "pointSize": 1,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -997,8 +730,6 @@
             }
           },
           "mappings": [],
-          "max": 100,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1018,13 +749,13 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.173.*/"
+              "options": "/PVE\\/\\.173.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "red",
+                  "fixedColor": "#FF6600",
                   "mode": "fixed"
                 }
               }
@@ -1033,13 +764,13 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.136.*/"
+              "options": "/PVE3\\/\\.136.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "blue",
+                  "fixedColor": "#8A2BE2",
                   "mode": "fixed"
                 }
               }
@@ -1048,13 +779,13 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.229.*/"
+              "options": "/Mac\\/\\.229.*/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "green",
+                  "fixedColor": "#DC143C",
                   "mode": "fixed"
                 }
               }
@@ -1063,10 +794,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 13,
-        "x": 0,
-        "y": 22
+        "h": 12,
+        "w": 11,
+        "x": 13,
+        "y": 6
       },
       "id": 5,
       "options": {
@@ -1078,8 +809,8 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "pluginVersion": "12.1.0",
@@ -1090,9 +821,9 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
-          "expr": "avg by (node) (cpu_utilization_percent{core=\"\"})",
+          "expr": "100 - cpu_usage_idle{cpu=\"cpu-total\",host=\"pve\"}",
           "instant": false,
-          "legendFormat": "Scrypted/.157 CPU",
+          "legendFormat": "PVE/.173 CPU",
           "range": true,
           "refId": "A"
         },
@@ -1102,9 +833,9 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
-          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "expr": "100 - cpu_usage_idle{cpu=\"cpu-total\",host=\"pve3\"}",
           "instant": false,
-          "legendFormat": "{{instance}} CPU",
+          "legendFormat": "PVE3/.136 CPU",
           "range": true,
           "refId": "B"
         },
@@ -1114,23 +845,11 @@
             "uid": "fetlt404vh7nka"
           },
           "editorMode": "code",
-          "expr": "mac_pcpu_usage_percent",
+          "expr": "(mac_pcpu_usage_percent + mac_ecpu_usage_percent) / 2",
           "instant": false,
-          "legendFormat": "Mac/.229 P-CPU",
+          "legendFormat": "Mac/.229 CPU",
           "range": true,
           "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "fetlt404vh7nka"
-          },
-          "editorMode": "code",
-          "expr": "mac_ecpu_usage_percent",
-          "instant": false,
-          "legendFormat": "Mac/.229 E-CPU",
-          "range": true,
-          "refId": "D"
         }
       ],
       "title": "CPU Utilization - All Nodes",
@@ -1148,15 +867,15 @@
           },
           "custom": {
             "axisBorderShow": false,
-            "axisCenteredZero": false,
+            "axisCenteredZero": true,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
+            "fillOpacity": 21,
+            "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1164,9 +883,9 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 1,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -1204,14 +923,74 @@
                 "value": "negative-Y"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*NVR-Storage Read.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8A2BE2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*NVR-Storage Write.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#DA70D6",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Another-NVR-Storage Read.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8A2BE2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Another-NVR-Storage Write.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#DA70D6",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 10,
         "w": 11,
-        "x": 13,
-        "y": 22
+        "x": 0,
+        "y": 18
       },
       "id": 21,
       "options": {
@@ -1282,6 +1061,31 @@
       "type": "timeseries"
     },
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 4,
+        "x": 11,
+        "y": 18
+      },
+      "id": 27,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #7B2CBF, #9D4EDD); border-radius: 8px; height: 100%; display: flex; justify-content: center; align-items: center;\">\n  <img src=\"https://docs.scrypted.app/img/logo.png\" alt=\"Scrypted Logo\" style=\"max-width: 90%; max-height: 90%; width: auto; height: auto;\" />\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "12.1.0",
+      "title": "",
+      "type": "text"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "fetlt404vh7nka"
@@ -1293,15 +1097,15 @@
           },
           "custom": {
             "axisBorderShow": false,
-            "axisCenteredZero": false,
+            "axisCenteredZero": true,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
+            "fillOpacity": 28,
+            "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1309,8 +1113,8 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1345,7 +1149,7 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/.*recv.*/"
+              "options": "/.*TX.*/"
             },
             "properties": [
               {
@@ -1353,14 +1157,134 @@
                 "value": "negative-Y"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*PVE3.*TX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8A2BE2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*PVE3.*RX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#DA70D6",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*PVE.*173.*TX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF6600",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*PVE.*173.*RX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF9933",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Mac.*TX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#DC143C",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Mac.*RX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#FF69B4",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Scrypted.*TX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8A2BE2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Scrypted.*RX.*/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#DA70D6",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 29
+        "h": 10,
+        "w": 9,
+        "x": 15,
+        "y": 18
       },
       "id": 9,
       "options": {
@@ -1479,12 +1403,452 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "fetlt404vh7nka"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "max": 90,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*NVR Storage 1.*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "🎥 NVR Storage 1"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*NVR Storage 2.*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "🎥 NVR Storage 2"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Plex Media.*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "🎬 Plex Media"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Mac Mini SSD.*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "💻 Mac Mini SSD"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Boot Disk - PVE[^3].*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "💾 Boot Disk - PVE"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/.*Boot Disk - PVE3.*/"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "💾 Boot Disk - PVE3"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 9,
+        "x": 0,
+        "y": 28
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "disk_utilization_percent{mount_point=\"/mnt/nvr/large/nvr-storage\"}",
+          "instant": false,
+          "legendFormat": "🎥 NVR Storage 1 ({{disk_used_bytes|humanize1024}}/{{disk_total_bytes|humanize1024}})",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "disk_utilization_percent{mount_point=\"/mnt/nvr/large/another-nvr-storage\"}",
+          "instant": false,
+          "legendFormat": "🎥 NVR Storage 2",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/srv/media\"} - node_filesystem_avail_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/srv/media\"}) / node_filesystem_size_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/srv/media\"} * 100",
+          "instant": false,
+          "legendFormat": "🎬 Plex Media",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=\"192.168.68.229:9100\",mountpoint=\"/\"} - node_filesystem_avail_bytes{instance=\"192.168.68.229:9100\",mountpoint=\"/\"}) / node_filesystem_size_bytes{instance=\"192.168.68.229:9100\",mountpoint=\"/\"} * 100",
+          "instant": false,
+          "legendFormat": "💻 Mac Mini SSD",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/\"} - node_filesystem_avail_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/\"}) / node_filesystem_size_bytes{instance=\"192.168.68.173:9100\",mountpoint=\"/\"} * 100",
+          "instant": false,
+          "legendFormat": "💾 Boot Disk - PVE",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "(node_filesystem_size_bytes{instance=\"192.168.68.136:9100\",mountpoint=\"/\"} - node_filesystem_avail_bytes{instance=\"192.168.68.136:9100\",mountpoint=\"/\"}) / node_filesystem_size_bytes{instance=\"192.168.68.136:9100\",mountpoint=\"/\"} * 100",
+          "instant": false,
+          "legendFormat": "💾 Boot Disk - PVE3",
+          "range": true,
+          "refId": "F"
+        }
+      ],
+      "title": "🗄️ Storage Usage",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "fetlt404vh7nka"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": true
+            },
+            "filterable": false,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 15
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Host"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU %"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 117
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Memory %"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 102
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "host 1"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 79
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "instance"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 235
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Full Command"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 1005
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 15,
+        "x": 9,
+        "y": 28
+      },
+      "id": 25,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "CPU %"
+          }
+        ]
+      },
+      "pluginVersion": "12.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "topk(10, top_process_cpu_percent{host=~\"$node\"})",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "fetlt404vh7nka"
+          },
+          "editorMode": "code",
+          "expr": "top_process_memory_percent{host=~\"$node\"}",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "B"
+        }
+      ],
+      "title": "🔥 Top CPU Processes (Full Commands)",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "full_command",
+            "mode": "inner"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "host 1": true,
+              "host 2": true,
+              "instance 1": true,
+              "instance 2": true,
+              "job": true,
+              "pid": true,
+              "process_id": true
+            },
+            "indexByName": {
+              "Value #A": 2,
+              "Value #B": 3,
+              "full_command": 1,
+              "host": 0
+            },
+            "renameByName": {
+              "Value #A": "CPU %",
+              "Value #B": "Memory %",
+              "full_command": "Full Command",
+              "host": "Node",
+              "instance": "Telegraf Source"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 42
       },
       "id": 4,
       "panels": [],
@@ -1497,7 +1861,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 43
       },
       "id": 6,
       "panels": [],
@@ -1510,7 +1874,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 44
       },
       "id": 8,
       "panels": [],
@@ -1523,7 +1887,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 45
       },
       "id": 22,
       "panels": [],
@@ -1536,7 +1900,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 24,
       "panels": [],
@@ -1557,8 +1921,8 @@
     "list": [
       {
         "current": {
-          "text": "node136",
-          "value": "node136"
+          "text": "cluster",
+          "value": "cluster"
         },
         "includeAll": false,
         "label": "Network View",
@@ -1570,28 +1934,56 @@
             "value": "scrypted"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "node136",
             "value": "node136"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "cluster",
             "value": "cluster"
           }
         ],
         "query": "scrypted,node136,cluster",
         "type": "custom"
+      },
+      {
+        "current": {
+          "text": "pve3",
+          "value": "pve3"
+        },
+        "includeAll": false,
+        "label": "Node Filter",
+        "name": "node",
+        "options": [
+          {
+            "selected": false,
+            "text": ".*",
+            "value": ".*"
+          },
+          {
+            "selected": false,
+            "text": "pve",
+            "value": "pve"
+          },
+          {
+            "selected": true,
+            "text": "pve3",
+            "value": "pve3"
+          }
+        ],
+        "query": ".*,pve,pve3",
+        "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "🚀 SCRYPTED 🎥 NVR Dashboard",
   "uid": "scrypted-telemetry",
-  "version": 37
+  "version": 67
 }

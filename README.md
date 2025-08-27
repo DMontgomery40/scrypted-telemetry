@@ -35,7 +35,7 @@ Install these first, then configure the plugin:
 ## Screenshots
 
 Grafana dashboard with multi-node monitoring:
-![Grafana Dashboard](assets/grafana-dashboard.png)
+![Grafana Dashboard](assets/dashv2.jpeg)
 
 Scrypted plugin configuration:
 ![Plugin Settings](assets/plugin-settings.png)
