@@ -1,0 +1,180 @@
+version: '3.8'
+
+networks:
+  telemetry:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+services:
+  # Core monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: scrypted-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    ports:
+      - '9090:9090'
+    networks:
+      - telemetry
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: scrypted-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=scrypted
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_INSTALL_PLUGINS=alexanderzobnin-zabbix-app
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
+      - ./dashboards:/var/lib/grafana/dashboards:rw
+    ports:
+      - '3000:3000'
+    networks:
+      - telemetry
+    depends_on:
+      - prometheus
+
+  # Dashboard Generator API
+  dashboard-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.generator
+    container_name: scrypted-dashboard-generator
+    restart: unless-stopped
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - GRAFANA_URL=http://grafana:3000
+      - DEBUG=false
+    ports:
+      - '5000:5000'
+    networks:
+      - telemetry
+    depends_on:
+      - prometheus
+      - grafana
+    volumes:
+      - ./dashboards:/app/dashboards:rw
+
+  # Node exporter for host metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: scrypted-node-exporter
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - '9100:9100'
+    networks:
+      - telemetry
+
+  # Intel NPU exporter (if NPU detected)
+  npu-exporter:
+    profiles: ["npu"]
+    build:
+      context: https://github.com/DMontgomery40/npu-telemetry-to-prometheus.git
+      dockerfile: Dockerfile
+    container_name: scrypted-npu-exporter
+    restart: unless-stopped
+    privileged: true
+    pid: host
+    volumes:
+      - /sys:/sys:ro
+      - /dev:/dev:ro
+    ports:
+      - '8000:8000'
+    networks:
+      - telemetry
+
+  # NVIDIA GPU exporter (if NVIDIA detected)
+  nvidia-exporter:
+    profiles: ["nvidia"]
+    image: nvidia/dcgm-exporter:latest
+    container_name: scrypted-nvidia-exporter
+    restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - '9400:9400'
+    networks:
+      - telemetry
+
+  # Intel GPU exporter (if Intel GPU detected)
+  intel-gpu-exporter:
+    profiles: ["intel-gpu"]
+    build:
+      context: https://github.com/bija56/gpu_top_exporter.git
+      dockerfile: Dockerfile
+    container_name: scrypted-intel-gpu-exporter
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /dev/dri:/dev/dri:rw
+    ports:
+      - '9273:9273'
+    networks:
+      - telemetry
+
+  # Telegraf for advanced metrics collection
+  telegraf:
+    profiles: ["advanced"]
+    image: telegraf:latest
+    container_name: scrypted-telegraf
+    restart: unless-stopped
+    hostname: telegraf
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+      - HOST_MOUNT_PREFIX=/host
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro
+    ports:
+      - '9273:9273'
+    networks:
+      - telemetry
+
+  # Auto-setup wizard (runs once)
+  setup-wizard:
+    profiles: ["setup"]
+    build:
+      context: .
+      dockerfile: Dockerfile.setup
+    container_name: scrypted-setup-wizard
+    environment:
+      - API_URL=http://dashboard-generator:5000
+      - PROMETHEUS_URL=http://prometheus:9090
+      - GRAFANA_URL=http://grafana:3000
+    networks:
+      - telemetry
+    depends_on:
+      - dashboard-generator
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./setup-complete:/setup-complete:rw
