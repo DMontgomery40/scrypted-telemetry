@@ -1078,7 +1078,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #7B2CBF, #9D4EDD); border-radius: 8px; height: 100%; display: flex; justify-content: center; align-items: center;\">\n  <img src=\"https://docs.scrypted.app/img/logo.png\" alt=\"Scrypted Logo\" style=\"max-width: 90%; max-height: 90%; width: auto; height: auto;\" />\n</div>",
+        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #7B2CBF, #9D4EDD); border-radius: 8px; height: 100%; display: flex; justify-content: center; align-items: center;\">\n  <img src=\"https://s3.us-west-1.amazonaws.com/s3-images.employbl.com/company-images/blissway-logo.jpg\" alt=\"Scrypted Logo\" style=\"max-width: 90%; max-height: 90%; width: auto; height: auto;\" />\n</div>",
         "mode": "html"
       },
       "pluginVersion": "12.1.0",
